@@ -1,14 +1,16 @@
 import path from "path";
 import fs from "fs";
 import sharp from "sharp";
-import { PNG } from "pngjs";
+import { PNG, PNGWithMetadata } from "pngjs";
 import pixelmatch, { PixelmatchOptions } from "pixelmatch";
+import appconfig from "../appconfig.json";
 import {
   AppType,
-  GetPath,
+  PathDetails,
   Options,
   PathWithPNG,
   PlatformType,
+  ImagePaths,
 } from "./type.js";
 import {
   VDI_IMAGE_WIDTH,
@@ -40,13 +42,13 @@ const createDirectoryFromPlatform = (platfrom: PlatformType) => {
 };
 
 const getPath = (
-  { filename, apptype, platform }: GetPath,
-  options?: {
+  { filename, apptype, platform }: PathDetails,
+  options: {
     isBaseline?: boolean;
     isCompare?: boolean;
     isDiff?: boolean;
   }
-) => {
+): PathWithPNG => {
   const baselineFolder = options.isBaseline ? "baseline" : "";
   const diffFolder = options.isDiff ? "compare/diff" : "";
   const compareFolder = options.isBaseline ? "compare" : "";
@@ -86,7 +88,7 @@ const IsSameDimension = (
 
 const resizeIMG = async (
   currIMGPath: PathWithPNG,
-  options?: sharp.ResizeOptions
+  options: sharp.ResizeOptions = {}
 ) => {
   if (!options.width) {
     options.width = VDI_IMAGE_WIDTH;
@@ -106,7 +108,13 @@ const diffPNG = new PNG({
 });
 
 const compareIMG = (
-  { img1, img2 },
+  {
+    img1,
+    img2,
+  }: {
+    img1: PNGWithMetadata;
+    img2: PNGWithMetadata;
+  },
   options: PixelmatchOptions = defaultCompareOptions
 ) => {
   const numDiffPixels = pixelmatch(
@@ -129,6 +137,65 @@ const writeIMG = (imagePath: PathWithPNG, imageBuffer: PNG) => {
   return fs.writeFileSync(imagePath, PNG.sync.write(imageBuffer));
 };
 
+const handleFailedComparison = ({
+  failFolder,
+  platform,
+  filename,
+}: {
+  failFolder: PathWithPNG;
+  platform: PlatformType;
+  filename: string;
+}) => {
+  const failedScreenshots = [];
+  console.error("Skipping comparison due to missing image data");
+  failedScreenshots.push(failFolder);
+  fs.writeFileSync(`failed-screenshots.txt`, failedScreenshots.join("\n"));
+  if (appconfig.pushnewBaseImageToSharedDrive === "true") {
+    const destinationPath = `drive/xxx/${platform}/${filename}_BETA.png`;
+    try {
+      fs.copyFileSync(failFolder, destinationPath);
+    } catch (error) {
+      console.error(error);
+      throw new Error("Failed to copy file to xxx Drive");
+    }
+  }
+  return {
+    result: false,
+    message: "Failed to compare due to missing image data",
+  };
+};
+
+const handleMismatch = (
+  paths: ImagePaths,
+  {
+    baselinePNG,
+    diffPNG,
+    numdiff,
+  }: {
+    baselinePNG: PNGWithMetadata;
+    diffPNG: PNG;
+    numdiff: number;
+  }
+) => {
+  const failedScreenshots = [];
+  writeIMG(paths.diff, diffPNG);
+  failedScreenshots.push(paths.current);
+  fs.writeFileSync(`failed-screenshots.txt`, failedScreenshots.join("\n"));
+  const { width, height } = baselinePNG;
+  const total = 1 - numdiff / (width * height);
+  const matchPercent = parseFloat(Math.round(total * 100).toFixed(2));
+  console.log(
+    `Mismatch found in screenshot ${paths.current} with ${matchPercent}% match`
+  );
+  const pixelThreshold = appconfig.threshold;
+
+  if (matchPercent < pixelThreshold) {
+    return {
+      result: false,
+      message: `Mismatch found in screenshot ${paths.current} with ${matchPercent}% match`,
+    };
+  }
+};
 export {
   determinePlatform,
   createDirectoryFromPlatform,
@@ -141,4 +208,6 @@ export {
   compareIMG,
   decodePNGFromPath,
   writeIMG,
+  handleFailedComparison,
+  handleMismatch,
 };

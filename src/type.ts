@@ -9,7 +9,7 @@ export interface Options {
   frame?: string;
 }
 
-export interface GetPath {
+export interface PathDetails {
   filename: string;
   apptype: AppType;
   platform: PlatformType;
@@ -19,3 +19,9 @@ export enum PlatformType {
   Desktop = "desktop",
   Web = "web",
 }
+
+export type ImagePaths = {
+  baseline: PathWithPNG;
+  current: PathWithPNG;
+  diff: PathWithPNG;
+};

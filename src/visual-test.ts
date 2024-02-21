@@ -1,13 +1,4 @@
-import appconfig from "../appconfig.json";
-import fs from "fs";
-
-import {
-  AppType,
-  PlatformType,
-  GetPath,
-  Options,
-  PathWithPNG,
-} from "./type.js";
+import { PlatformType, Options, ImagePaths } from "./type.js";
 import { APP_TYPE } from "./config.js";
 import {
   IsSameDimension,
@@ -19,15 +10,18 @@ import {
   diffPNG,
   getIMGMetadata,
   getPath,
+  handleFailedComparison,
+  handleMismatch,
   resizeIMG,
-  writeIMG,
 } from "./Utils.js";
+import { PNGWithMetadata } from "pngjs";
+import sharp from "sharp";
 
 const compareScreenshots = async ({ selector, filename, frame }: Options) => {
-  const platform = determinePlatform(APP_TYPE);
+  const platform: PlatformType = determinePlatform(APP_TYPE);
   createDirectoryFromPlatform(platform);
 
-  const paths = {
+  const paths: ImagePaths = {
     baseline: getPath(
       { filename, apptype: APP_TYPE, platform },
       { isBaseline: true }
@@ -41,12 +35,14 @@ const compareScreenshots = async ({ selector, filename, frame }: Options) => {
 
   await captureScreenshot({ selector, filename: paths.current, frame });
 
-  let baselineIMGDimension = await getIMGMetadata(paths.baseline);
-  let currentIMGDimension = await getIMGMetadata(paths.current);
+  let baselineIMGDimension: sharp.Metadata = await getIMGMetadata(
+    paths.baseline
+  );
+  let currentIMGDimension: sharp.Metadata = await getIMGMetadata(paths.current);
 
   console.log(currentIMGDimension);
 
-  const isSameIMGSize = IsSameDimension(
+  const isSameIMGSize: boolean = IsSameDimension(
     baselineIMGDimension,
     currentIMGDimension
   );
@@ -62,28 +58,15 @@ const compareScreenshots = async ({ selector, filename, frame }: Options) => {
   console.log(currentIMGDimension);
   console.log(baselineIMGDimension);
 
-  const baselinePNG = decodePNGFromPath(paths.baseline);
-  const currentPNG = decodePNGFromPath(paths.current);
-
-  const failedScreenshots = [];
+  const baselinePNG: PNGWithMetadata = decodePNGFromPath(paths.baseline);
+  const currentPNG: PNGWithMetadata = decodePNGFromPath(paths.current);
 
   if (!baselinePNG || !currentPNG) {
-    console.error("Skipping comparison due to missing image data");
-    failedScreenshots.push(paths.current);
-    fs.writeFileSync(`failed-screenshots.txt`, failedScreenshots.join("\n"));
-    if (appconfig.pushnewBaseImageToSharedDrive === "true") {
-      const destinationPath = `drive/xxx/${platform}/${filename}_BETA.png`;
-      try {
-        fs.copyFileSync(paths.current, destinationPath);
-      } catch (error) {
-        console.error(error);
-        throw new Error("Failed to copy file to xxx Drive");
-      }
-    }
-    return {
-      result: false,
-      message: "Failed to compare due to missing image data",
-    };
+    return handleFailedComparison({
+      failFolder: paths.current,
+      platform,
+      filename,
+    });
   }
 
   const numdiff = compareIMG({
@@ -92,26 +75,15 @@ const compareScreenshots = async ({ selector, filename, frame }: Options) => {
   });
 
   if (numdiff > 0) {
-    writeIMG(paths.diff, diffPNG);
-    failedScreenshots.push(paths.current);
-    fs.writeFileSync(`failed-screenshots.txt`, failedScreenshots.join("\n"));
-    const { width, height } = baselinePNG;
-    const total = 1 - numdiff / (width * height);
-    const matchPercent = parseFloat(Math.round(total * 100).toFixed(2));
-    console.log(
-      `Mismatch found in screenshot ${paths.current} with ${matchPercent}% match`
-    );
-    const pixelThreshold = appconfig.threshold;
-
-    if (matchPercent < pixelThreshold) {
-      return {
-        result: false,
-        message: `Mismatch found in screenshot ${paths.current} with ${matchPercent}% match`,
-      };
-    }
-    return {
-      result: true,
-      message: `Match found in screenshot ${paths.current} with ${matchPercent}% match`,
-    };
+    const result = handleMismatch(paths, {
+      baselinePNG,
+      diffPNG,
+      numdiff,
+    });
+    return result;
   }
+  return {
+    result: true,
+    message: "Images are same",
+  };
 };
