@@ -86,10 +86,17 @@ const IsSameDimension = (
   );
 };
 
+/**
+ * Resizes an image using the specified options and returns the output information.
+ *
+ * @param {PathWithPNG} currIMGPath - the path of the current image to be resized
+ * @param {sharp.ResizeOptions} options - the options for resizing the image
+ * @return {Promise<sharp.OutputInfo>} the output information of the resized image
+ */
 const resizeIMG = async (
   currIMGPath: PathWithPNG,
   options: sharp.ResizeOptions = {}
-) => {
+): Promise<sharp.OutputInfo> => {
   if (!options.width) {
     options.width = VDI_IMAGE_WIDTH;
   }
@@ -99,7 +106,7 @@ const resizeIMG = async (
   if (!options.fit) {
     options.fit = "fill";
   }
-  await sharp(currIMGPath).resize(options).toFile(currIMGPath);
+  return await sharp(currIMGPath).resize(options).toFile(currIMGPath);
 };
 
 const diffPNG = new PNG({
@@ -128,11 +135,24 @@ const compareIMG = (
   return numDiffPixels;
 };
 
+/**
+ * Decode PNG from the given file path.
+ *
+ * @param {PathWithPNG} imagePath - the path to the PNG image file
+ * @return {PNG} the decoded PNG image
+ */
 const decodePNGFromPath = (imagePath: PathWithPNG) => {
   const imageBuffer = fs.readFileSync(imagePath);
   return PNG.sync.read(imageBuffer);
 };
 
+/**
+ * Writes the provided image buffer to the specified image path.
+ *
+ * @param {PathWithPNG} imagePath - the path where the image will be written
+ * @param {PNG} imageBuffer - the buffer containing the image data
+ * @return {void}
+ */
 const writeIMG = (imagePath: PathWithPNG, imageBuffer: PNG) => {
   return fs.writeFileSync(imagePath, PNG.sync.write(imageBuffer));
 };
@@ -165,6 +185,16 @@ const handleFailedComparison = ({
   };
 };
 
+/**
+ * Handles the mismatch between baseline and diff images, and logs the result.
+ *
+ * @param {ImagePaths} paths - object containing paths for images
+ * @param {Object} param1 - object containing baseline and diff images, and the number of differing pixels
+ * @param {PNGWithMetadata} param1.baselinePNG - the baseline image with metadata
+ * @param {PNG} param1.diffPNG - the differing image
+ * @param {number} param1.numdiff - the number of differing pixels
+ * @return {Object} object containing result and message if mismatch is found
+ */
 const handleMismatch = (
   paths: ImagePaths,
   {
