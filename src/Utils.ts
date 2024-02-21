@@ -11,6 +11,7 @@ import {
   PathWithPNG,
   PlatformType,
   ImagePaths,
+  HandleMismatchParams,
 } from "./type.js";
 import {
   VDI_IMAGE_WIDTH,
@@ -186,26 +187,15 @@ const handleFailedComparison = ({
 };
 
 /**
- * Handles the mismatch between baseline and diff images, and logs the result.
+ * Handles the mismatch between baseline and current screenshots.
  *
- * @param {ImagePaths} paths - object containing paths for images
- * @param {Object} param1 - object containing baseline and diff images, and the number of differing pixels
- * @param {PNGWithMetadata} param1.baselinePNG - the baseline image with metadata
- * @param {PNG} param1.diffPNG - the differing image
- * @param {number} param1.numdiff - the number of differing pixels
- * @return {Object} object containing result and message if mismatch is found
+ * @param {ImagePaths} paths - object containing paths to images
+ * @param {HandleMismatchParams} object - object containing baseline image, diff image, and numdiff
+ * @return {object} object with result and message properties
  */
 const handleMismatch = (
   paths: ImagePaths,
-  {
-    baselinePNG,
-    diffPNG,
-    numdiff,
-  }: {
-    baselinePNG: PNGWithMetadata;
-    diffPNG: PNG;
-    numdiff: number;
-  }
+  { baselinePNG, diffPNG, numdiff }: HandleMismatchParams
 ) => {
   const failedScreenshots = [];
   writeIMG(paths.diff, diffPNG);
