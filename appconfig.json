@@ -1,5 +1,5 @@
-{
-    "apptype":"Chrome",
+ {
+    "apptype":"desktop",
     "pushnewBaseImageToSharedDrive":"true",
     "threshold":0.1
 }

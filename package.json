@@ -2,9 +2,9 @@
   "name": "comparess",
   "version": "1.0.0",
   "description": "",
-  "type": "module",
   "scripts": {
-    "build": "tsc"
+    "build": "copyfiles screenshots/* ./dist && tsc",
+    "test":"node dist/src/AppTest"
   },
   "author": "",
   "license": "ISC",
@@ -13,6 +13,7 @@
     "@types/pixelmatch": "^5.2.6",
     "@types/pngjs": "^6.0.4",
     "@wdio/globals": "^8.32.3",
+    "copyfiles": "^2.4.1",
     "pixelmatch": "^5.3.0",
     "pngjs": "^7.0.0",
     "sharp": "^0.33.2",

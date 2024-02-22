@@ -18,7 +18,7 @@ import {
   VDI_IMAGE_HEIGHT,
   defaultCompareOptions,
 } from "./config.js";
-import { driver } from "@wdio/globals";
+// import { driver } from "@wdio/globals";
 // Include all utility functions here, such as determinePlatform, createDirectoryFromPlatform, getPath, etc.
 const determinePlatform = (appType: AppType): PlatformType => {
   return appType.toLowerCase() === "desktop" ||
@@ -31,12 +31,26 @@ const createDirectoryFromPlatform = (platfrom: PlatformType) => {
   const isSuccess = true;
   try {
     if (platfrom === PlatformType.Desktop) {
-      fs.mkdirSync("./visual-test/desktop", { recursive: true });
+      fs.mkdirSync("./screenshots/", { recursive: true });
     }
     if (platfrom === PlatformType.Web) {
-      fs.mkdirSync("./visual-test/web", { recursive: true });
+      fs.mkdirSync("./screenshots/", { recursive: true });
     }
     return isSuccess;
+  } catch (error) {
+    return !isSuccess;
+  }
+};
+
+const createDirectoryFromPath = (path: string) => {
+  const isSuccess = true;
+  try {
+    const regex = new RegExp(/^(.*[\/\\])([^\/\\]+\.png)$/);
+    const match = regex.exec(path);
+    if (match) {
+      fs.mkdirSync(match[1], { recursive: true });
+      return isSuccess;
+    }
   } catch (error) {
     return !isSuccess;
   }
@@ -52,7 +66,7 @@ const getPath = (
 ): PathWithPNG => {
   const baselineFolder = options.isBaseline ? "baseline" : "";
   const diffFolder = options.isDiff ? "compare/diff" : "";
-  const compareFolder = options.isBaseline ? "compare" : "";
+  const compareFolder = options.isCompare ? "compare" : "";
 
   return path.join(
     process.cwd(),
@@ -60,17 +74,20 @@ const getPath = (
     baselineFolder,
     compareFolder,
     diffFolder,
-    apptype,
+    // apptype,
     platform,
     `${filename}.png`
   ) as PathWithPNG;
 };
 
-const captureScreenshot = async ({ selector, filename, frame }: Options) => {
+const captureScreenshot = async (
+  { selector, filename, frame }: Options,
+  browser: WebdriverIO.Browser
+) => {
   if (frame) {
     //do something with additional frame
   }
-  return await (await driver.$(selector)).saveScreenshot(filename);
+  return await (await browser.$(selector)).saveScreenshot(filename);
 };
 
 const getIMGMetadata = async (imagePath: PathWithPNG) => {
@@ -119,18 +136,26 @@ const compareIMG = (
   {
     img1,
     img2,
+    width = VDI_IMAGE_WIDTH,
+    height = VDI_IMAGE_HEIGHT,
   }: {
     img1: PNGWithMetadata;
     img2: PNGWithMetadata;
+    width: number;
+    height: number;
   },
   options: PixelmatchOptions = defaultCompareOptions
 ) => {
+  const diffPNG = new PNG({
+    width,
+    height,
+  });
   const numDiffPixels = pixelmatch(
     img1.data,
     img2.data,
     diffPNG.data,
-    VDI_IMAGE_WIDTH,
-    VDI_IMAGE_HEIGHT,
+    width,
+    height,
     options
   );
   return numDiffPixels;
@@ -207,7 +232,7 @@ const handleMismatch = (
   console.log(
     `Mismatch found in screenshot ${paths.current} with ${matchPercent}% match`
   );
-  const pixelThreshold = appconfig.threshold;
+  const pixelThreshold = appconfig.threshold ?? 0.1;
 
   if (matchPercent < pixelThreshold) {
     return {
@@ -230,4 +255,5 @@ export {
   writeIMG,
   handleFailedComparison,
   handleMismatch,
+  createDirectoryFromPath,
 };

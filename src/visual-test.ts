@@ -4,6 +4,7 @@ import {
   IsSameDimension,
   captureScreenshot,
   compareIMG,
+  createDirectoryFromPath,
   createDirectoryFromPlatform,
   decodePNGFromPath,
   determinePlatform,
@@ -17,9 +18,14 @@ import {
 import { PNGWithMetadata } from "pngjs";
 import sharp from "sharp";
 
-const compareScreenshots = async ({ selector, filename, frame }: Options) => {
+export const compareScreenshots = async (
+  { selector, filename, frame }: Options,
+  browser: WebdriverIO.Browser
+) => {
   const platform: PlatformType = determinePlatform(APP_TYPE);
-  createDirectoryFromPlatform(platform);
+
+  console.log("Plantfom 💜", platform);
+  // createDirectoryFromPlatform(platform);
 
   const paths: ImagePaths = {
     baseline: getPath(
@@ -32,8 +38,13 @@ const compareScreenshots = async ({ selector, filename, frame }: Options) => {
     ),
     diff: getPath({ filename, apptype: APP_TYPE, platform }, { isDiff: true }),
   };
-
-  await captureScreenshot({ selector, filename: paths.current, frame });
+  for (const path of Object.values(paths)) {
+    createDirectoryFromPath(path);
+  }
+  await captureScreenshot(
+    { selector, filename: paths.current, frame },
+    browser
+  );
 
   let baselineIMGDimension: sharp.Metadata = await getIMGMetadata(
     paths.baseline
@@ -55,11 +66,11 @@ const compareScreenshots = async ({ selector, filename, frame }: Options) => {
   baselineIMGDimension = await getIMGMetadata(paths.baseline);
   currentIMGDimension = await getIMGMetadata(paths.current);
 
-  console.log(currentIMGDimension);
-  console.log(baselineIMGDimension);
-
   const baselinePNG: PNGWithMetadata = decodePNGFromPath(paths.baseline);
   const currentPNG: PNGWithMetadata = decodePNGFromPath(paths.current);
+
+  console.log(`baseline-data:`, baselinePNG.width, baselinePNG.height);
+  console.log(`current-data:`, currentPNG.width, currentPNG.height);
 
   if (!baselinePNG || !currentPNG) {
     return handleFailedComparison({
@@ -68,10 +79,12 @@ const compareScreenshots = async ({ selector, filename, frame }: Options) => {
       filename,
     });
   }
-
+  //result of pixelmatch
   const numdiff = compareIMG({
     img1: baselinePNG,
     img2: currentPNG,
+    width: baselinePNG.width as number,
+    height: baselinePNG.height as number,
   });
 
   if (numdiff > 0) {
