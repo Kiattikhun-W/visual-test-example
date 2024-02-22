@@ -127,12 +127,8 @@ const resizeIMG = async (
   return await sharp(currIMGPath).resize(options).toFile(currIMGPath);
 };
 
-const diffPNG = new PNG({
-  width: VDI_IMAGE_WIDTH,
-  height: VDI_IMAGE_HEIGHT,
-});
-
 const compareIMG = (
+  path: PathWithPNG,
   {
     img1,
     img2,
@@ -156,8 +152,10 @@ const compareIMG = (
     diffPNG.data,
     width,
     height,
-    options
+    { threshold: 0.1 }
   );
+  fs.writeFileSync(path, PNG.sync.write(diffPNG));
+
   return numDiffPixels;
 };
 
@@ -223,7 +221,7 @@ const handleMismatch = (
   { baselinePNG, diffPNG, numdiff }: HandleMismatchParams
 ) => {
   const failedScreenshots = [];
-  writeIMG(paths.diff, diffPNG);
+  // writeIMG(paths.diff, diffPNG);
   failedScreenshots.push(paths.current);
   fs.writeFileSync(`failed-screenshots.txt`, failedScreenshots.join("\n"));
   const { width, height } = baselinePNG;
@@ -234,12 +232,10 @@ const handleMismatch = (
   );
   const pixelThreshold = appconfig.threshold ?? 0.1;
 
-  if (matchPercent < pixelThreshold) {
-    return {
-      result: false,
-      message: `Mismatch found in screenshot ${paths.current} with ${matchPercent}% match`,
-    };
-  }
+  return {
+    result: false,
+    message: `Mismatch found in screenshot ${paths.current} with ${matchPercent}% match`,
+  };
 };
 export {
   determinePlatform,
@@ -249,7 +245,6 @@ export {
   getIMGMetadata,
   IsSameDimension,
   resizeIMG,
-  diffPNG,
   compareIMG,
   decodePNGFromPath,
   writeIMG,

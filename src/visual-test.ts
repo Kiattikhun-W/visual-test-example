@@ -8,14 +8,13 @@ import {
   createDirectoryFromPlatform,
   decodePNGFromPath,
   determinePlatform,
-  diffPNG,
   getIMGMetadata,
   getPath,
   handleFailedComparison,
   handleMismatch,
   resizeIMG,
 } from "./Utils.js";
-import { PNGWithMetadata } from "pngjs";
+import { PNG, PNGWithMetadata } from "pngjs";
 import sharp from "sharp";
 
 export const compareScreenshots = async (
@@ -51,8 +50,6 @@ export const compareScreenshots = async (
   );
   let currentIMGDimension: sharp.Metadata = await getIMGMetadata(paths.current);
 
-  console.log(currentIMGDimension);
-
   const isSameIMGSize: boolean = IsSameDimension(
     baselineIMGDimension,
     currentIMGDimension
@@ -69,9 +66,6 @@ export const compareScreenshots = async (
   const baselinePNG: PNGWithMetadata = decodePNGFromPath(paths.baseline);
   const currentPNG: PNGWithMetadata = decodePNGFromPath(paths.current);
 
-  console.log(`baseline-data:`, baselinePNG.width, baselinePNG.height);
-  console.log(`current-data:`, currentPNG.width, currentPNG.height);
-
   if (!baselinePNG || !currentPNG) {
     return handleFailedComparison({
       failFolder: paths.current,
@@ -80,12 +74,19 @@ export const compareScreenshots = async (
     });
   }
   //result of pixelmatch
-  const numdiff = compareIMG({
+  const numdiff = compareIMG(paths.diff, {
     img1: baselinePNG,
     img2: currentPNG,
     width: baselinePNG.width as number,
     height: baselinePNG.height as number,
   });
+
+  const diffPNG = new PNG({
+    width: baselinePNG.width,
+    height: baselinePNG.height,
+  });
+
+  console.log("outside", diffPNG.width, diffPNG.height, diffPNG.data);
 
   if (numdiff > 0) {
     const result = handleMismatch(paths, {
