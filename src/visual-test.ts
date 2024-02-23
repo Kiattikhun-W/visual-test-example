@@ -13,11 +13,12 @@ import {
   handleFailedComparison,
   handleMismatch,
   resizeIMG,
+  writeIMG,
 } from "./Utils.js";
 import { PNG, PNGWithMetadata } from "pngjs";
 import sharp from "sharp";
-
-export const compareScreenshots = async (
+import fs from "fs";
+export const checkScreenshots = async (
   { selector, filename, frame }: Options,
   browser: WebdriverIO.Browser
 ) => {
@@ -74,25 +75,18 @@ export const compareScreenshots = async (
     });
   }
   //result of pixelmatch
-  const numdiff = compareIMG(paths.diff, {
+  const { numDiffPixels, diffPNG } = compareIMG(paths.diff, {
     img1: baselinePNG,
     img2: currentPNG,
     width: baselinePNG.width as number,
     height: baselinePNG.height as number,
   });
 
-  const diffPNG = new PNG({
-    width: baselinePNG.width,
-    height: baselinePNG.height,
-  });
-
-  console.log("outside", diffPNG.width, diffPNG.height, diffPNG.data);
-
-  if (numdiff > 0) {
+  if (numDiffPixels > 0) {
     const result = handleMismatch(paths, {
       baselinePNG,
       diffPNG,
-      numdiff,
+      numdiff: numDiffPixels,
     });
     return result;
   }

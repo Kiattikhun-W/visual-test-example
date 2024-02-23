@@ -154,9 +154,8 @@ const compareIMG = (
     height,
     { threshold: 0.1 }
   );
-  fs.writeFileSync(path, PNG.sync.write(diffPNG));
 
-  return numDiffPixels;
+  return { numDiffPixels, diffPNG };
 };
 
 /**
@@ -221,7 +220,7 @@ const handleMismatch = (
   { baselinePNG, diffPNG, numdiff }: HandleMismatchParams
 ) => {
   const failedScreenshots = [];
-  // writeIMG(paths.diff, diffPNG);
+  writeIMG(paths.diff, diffPNG);
   failedScreenshots.push(paths.current);
   fs.writeFileSync(`failed-screenshots.txt`, failedScreenshots.join("\n"));
   const { width, height } = baselinePNG;
@@ -237,6 +236,7 @@ const handleMismatch = (
     message: `Mismatch found in screenshot ${paths.current} with ${matchPercent}% match`,
   };
 };
+
 export {
   determinePlatform,
   createDirectoryFromPlatform,

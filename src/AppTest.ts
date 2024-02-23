@@ -1,5 +1,5 @@
 import { remote } from "webdriverio";
-import { compareScreenshots } from "./visual-test.js";
+import { checkScreenshots } from "./visual-test.js";
 
 async function AppTest() {
   const browser = await remote({
@@ -10,7 +10,7 @@ async function AppTest() {
   });
 
   await browser.url("https://webdriver.io/");
-  await compareScreenshots(
+  await checkScreenshots(
     {
       selector: ".hero__title",
       filename: "test",
