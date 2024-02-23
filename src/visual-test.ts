@@ -15,6 +15,8 @@ import {
 } from "./Utils.js";
 import { PNGWithMetadata } from "pngjs";
 import sharp from "sharp";
+import fs from "fs";
+
 export const checkScreenshots = async (
   { selector, filename, frame }: Options,
   browser: WebdriverIO.Browser
@@ -38,6 +40,14 @@ export const checkScreenshots = async (
   for (const path of Object.values(paths)) {
     createDirectoryFromPath(path);
   }
+
+  if (!fs.existsSync(paths.baseline)) {
+    await captureScreenshot(
+      { selector, filename: paths.baseline, frame },
+      browser
+    );
+  }
+
   await captureScreenshot(
     { selector, filename: paths.current, frame },
     browser
@@ -87,6 +97,7 @@ export const checkScreenshots = async (
     });
     return result;
   }
+  console.info("Images are same");
   return {
     result: true,
     message: "Images are same",

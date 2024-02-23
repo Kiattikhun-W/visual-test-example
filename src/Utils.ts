@@ -18,8 +18,15 @@ import {
   VDI_IMAGE_HEIGHT,
   defaultCompareOptions,
 } from "./config.js";
-// import { driver } from "@wdio/globals";
-// Include all utility functions here, such as determinePlatform, createDirectoryFromPlatform, getPath, etc.
+
+const writeFile = (
+  path: string,
+  data: Buffer | string,
+  options?: fs.WriteFileOptions | undefined
+) => {
+  fs.writeFileSync(path, data, options);
+};
+
 const determinePlatform = (appType: AppType): PlatformType => {
   return appType.toLowerCase() === "desktop" ||
     appType.toLowerCase() === "oldDesktop"
@@ -50,6 +57,8 @@ const createDirectoryFromPath = (path: string) => {
     if (match) {
       fs.mkdirSync(match[1], { recursive: true });
       return isSuccess;
+    } else {
+      fs.mkdirSync(path, { recursive: true });
     }
   } catch (error) {
     return !isSuccess;
@@ -107,14 +116,14 @@ const IsSameDimension = (
 /**
  * Resizes an image using the specified options and returns the output information.
  *
- * @param {PathWithPNG} currIMGPath - the path of the current image to be resized
+ * @param {PathWithPNG} IMG - the path of the current image to be resized
  * @param {sharp.ResizeOptions} options - the options for resizing the image
  * @return {Promise<sharp.OutputInfo>} the output information of the resized image
  */
 const resizeIMG = async (
-  currIMGPath: PathWithPNG,
+  IMG: PathWithPNG,
   options: sharp.ResizeOptions = {}
-): Promise<sharp.OutputInfo> => {
+): Promise<void> => {
   if (!options.width) {
     options.width = VDI_IMAGE_WIDTH;
   }
@@ -124,7 +133,10 @@ const resizeIMG = async (
   if (!options.fit) {
     options.fit = "fill";
   }
-  return await sharp(currIMGPath).resize(options).toFile(currIMGPath);
+
+  await sharp(IMG).resize(options).toFile(`${IMG}.resize.png`);
+  fs.copyFileSync(`${IMG}.resize.png`, IMG);
+  fs.unlinkSync(`${IMG}.resize.png`);
 };
 
 const compareIMG = (
@@ -177,7 +189,9 @@ const decodePNGFromPath = (imagePath: PathWithPNG) => {
  * @return {void}
  */
 const writeIMG = (imagePath: PathWithPNG, imageBuffer: PNG) => {
-  return fs.writeFileSync(imagePath, PNG.sync.write(imageBuffer));
+  console.info('Writing image to "%s"', imagePath);
+  writeFile(imagePath, PNG.sync.write(imageBuffer));
+  console.info('Successfully wrote image to "%s"', imagePath);
 };
 
 const handleFailedComparison = ({
@@ -192,7 +206,7 @@ const handleFailedComparison = ({
   const failedScreenshots = [];
   console.error("Skipping comparison due to missing image data");
   failedScreenshots.push(failFolder);
-  fs.writeFileSync(`failed-screenshots.txt`, failedScreenshots.join("\n"));
+  writeFile(`failed-screenshots.txt`, failedScreenshots.join("\n"));
   if (appconfig.pushnewBaseImageToSharedDrive === "true") {
     const destinationPath = `drive/xxx/${platform}/${filename}_BETA.png`;
     try {
@@ -223,7 +237,7 @@ const writeFailedScreenshot = (
   failedScreenshotPath: string,
   screenshots: string[]
 ) => {
-  fs.writeFileSync(failedScreenshotPath, screenshots.join("\n"));
+  writeFile(failedScreenshotPath, screenshots.join("\n"));
 };
 
 /**
@@ -237,17 +251,23 @@ const handleMismatch = (
   paths: ImagePaths,
   { baselinePNG, diffPNG, numdiff }: HandleMismatchParams
 ) => {
-  const failedScreenshots = [paths.current];
-  writeIMG(paths.diff, diffPNG);
-  writeFailedScreenshot("failed-screenshots.txt", failedScreenshots);
   const matchPercent = calculateMatchPercent(baselinePNG, numdiff);
-  console.info(
+  console.log(
     `Mismatch found in screenshot ${paths.current} with ${matchPercent}% match`
   );
+  if (appconfig.threshold < matchPercent) {
+    const failedScreenshots = [paths.current];
+    writeIMG(paths.diff, diffPNG);
 
+    writeFailedScreenshot("failed-screenshots.txt", failedScreenshots);
+
+    return {
+      result: false,
+      message: `Mismatch found in screenshot ${paths.current} with ${matchPercent}% match`,
+    };
+  }
   return {
-    result: false,
-    message: `Mismatch found in screenshot ${paths.current} with ${matchPercent}% match`,
+    result: true,
   };
 };
 

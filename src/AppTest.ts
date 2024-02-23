@@ -13,7 +13,8 @@ async function AppTest() {
   await checkScreenshots(
     {
       selector: ".hero__title",
-      filename: "test",
+      // selector: "#ms-floating-button",
+      filename: "test2",
     },
     browser
   );
