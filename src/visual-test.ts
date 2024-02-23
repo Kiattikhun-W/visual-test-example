@@ -5,7 +5,6 @@ import {
   captureScreenshot,
   compareIMG,
   createDirectoryFromPath,
-  createDirectoryFromPlatform,
   decodePNGFromPath,
   determinePlatform,
   getIMGMetadata,
@@ -13,11 +12,9 @@ import {
   handleFailedComparison,
   handleMismatch,
   resizeIMG,
-  writeIMG,
 } from "./Utils.js";
-import { PNG, PNGWithMetadata } from "pngjs";
+import { PNGWithMetadata } from "pngjs";
 import sharp from "sharp";
-import fs from "fs";
 export const checkScreenshots = async (
   { selector, filename, frame }: Options,
   browser: WebdriverIO.Browser

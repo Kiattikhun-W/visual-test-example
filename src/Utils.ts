@@ -208,6 +208,24 @@ const handleFailedComparison = ({
   };
 };
 
+const calculateMatchPercent = (
+  baselinePNG: { width: number; height: number },
+  numDiffPixels: number
+): number => {
+  const RATIO_TO_PERCENTAGE = 100; // Converts a ratio to a percentage
+
+  const totalPixels = baselinePNG.width * baselinePNG.height;
+  const matchRatio = 1 - numDiffPixels / totalPixels;
+  return parseFloat((matchRatio * RATIO_TO_PERCENTAGE).toFixed(2));
+};
+
+const writeFailedScreenshot = (
+  failedScreenshotPath: string,
+  screenshots: string[]
+) => {
+  fs.writeFileSync(failedScreenshotPath, screenshots.join("\n"));
+};
+
 /**
  * Handles the mismatch between baseline and current screenshots.
  *
@@ -219,17 +237,13 @@ const handleMismatch = (
   paths: ImagePaths,
   { baselinePNG, diffPNG, numdiff }: HandleMismatchParams
 ) => {
-  const failedScreenshots = [];
+  const failedScreenshots = [paths.current];
   writeIMG(paths.diff, diffPNG);
-  failedScreenshots.push(paths.current);
-  fs.writeFileSync(`failed-screenshots.txt`, failedScreenshots.join("\n"));
-  const { width, height } = baselinePNG;
-  const total = 1 - numdiff / (width * height);
-  const matchPercent = parseFloat(Math.round(total * 100).toFixed(2));
-  console.log(
+  writeFailedScreenshot("failed-screenshots.txt", failedScreenshots);
+  const matchPercent = calculateMatchPercent(baselinePNG, numdiff);
+  console.info(
     `Mismatch found in screenshot ${paths.current} with ${matchPercent}% match`
   );
-  const pixelThreshold = appconfig.threshold ?? 0.1;
 
   return {
     result: false,
