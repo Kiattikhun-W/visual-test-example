@@ -1,9 +1,7 @@
 import { expect, test, describe, it, beforeAll, vi } from "vitest";
 import fs from "fs";
 import * as Util from "./Utils";
-import sharp from "sharp";
-import { PlatformType } from "./type";
-import appconfig from "../appconfig.json";
+
 describe("getIMGMetadata", () => {
   test("should return the metadata of the image", async () => {
     // Arrange
@@ -93,36 +91,3 @@ describe("writeFailedScreenshot", () => {
     );
   });
 });
-
-// describe("handleFailedComparison", () => {
-//   beforeAll(() => {
-//     vi.mock("../appconfig.json", async (importOriginal) => {
-//       const actual = await importOriginal();
-//       return {
-//         // replace some exports
-//         ...actual,
-//         ccc: "zxczxc",
-//       };
-//     });
-//   });
-//   test("should write the failed screenshot path to the file", () => {
-//     // Arrange
-//     const platform = "Windows";
-//     const filename = "test-image";
-//     const failFolder = `${process.cwd()}/unit-test/${filename}.png`;
-//     const resultx = appconfig.ccc;
-//     console.log(resultx);
-//     // Act
-//     const result = Util.handleFailedComparison({
-//       failFolder,
-//       platform,
-//       filename,
-//     });
-
-//     // Assert
-//     const fileContent = fs.readFileSync("failed-screenshots.txt", "utf-8");
-//     expect(fileContent).toContain(failFolder);
-//     expect(result.result).toBe(false);
-//     expect(result.message).toBe("Failed to compare due to missing image data");
-//   });
-// });
