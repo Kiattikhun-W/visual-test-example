@@ -1,3 +1,7 @@
+### FYI
+
+Still in progress, And this repo focus on how `checkScreenshots` function work
+
 ## Installation
 
 1. Clone this repo
