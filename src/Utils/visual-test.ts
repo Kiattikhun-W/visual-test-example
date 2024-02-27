@@ -1,4 +1,9 @@
-import { PlatformType, Options, ImagePaths } from "../types/type.js";
+import {
+  PlatformType,
+  Options,
+  ImagePaths,
+  ImageComparisonResults,
+} from "../types/type.js";
 import { APP_TYPE } from "../config/config.js";
 import {
   IsSameDimension,
@@ -17,10 +22,16 @@ import { PNGWithMetadata } from "pngjs";
 import sharp from "sharp";
 import fs from "fs";
 
+/**
+ * Checks and compares screenshots for a given selector, filename, and frame.
+ * @param options - The options for screenshot comparison.
+ * @param browser - The WebdriverIO browser instance.
+ * @returns An object containing the result and message of the comparison.
+ */
 export const checkScreenshots = async (
   { selector, filename, frame }: Options,
   browser: WebdriverIO.Browser
-) => {
+): Promise<ImageComparisonResults> => {
   const platform: PlatformType = determinePlatform(APP_TYPE);
 
   console.log("Plantfom 💜", platform);
@@ -112,5 +123,6 @@ export const checkScreenshots = async (
   return {
     result: true,
     message: "Images are same",
+    numDiffPixels,
   };
 };

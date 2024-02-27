@@ -31,3 +31,8 @@ export type ImagePaths = {
   current: PathWithPNG;
   diff: PathWithPNG;
 };
+export type ImageComparisonResults = {
+  result: boolean;
+  message: string;
+  numDiffPixels: number;
+};

@@ -12,6 +12,7 @@ import {
   PlatformType,
   ImagePaths,
   HandleMismatchParams,
+  ImageComparisonResults,
 } from "../types/type.js";
 import {
   VDI_IMAGE_WIDTH,
@@ -214,7 +215,7 @@ const handleFailedComparison = ({
   failFolder: PathWithPNG;
   platform: PlatformType;
   filename: string;
-}) => {
+}): ImageComparisonResults => {
   const failedScreenshots = [];
   console.error("Skipping comparison due to missing image data");
   failedScreenshots.push(failFolder);
@@ -231,6 +232,7 @@ const handleFailedComparison = ({
   return {
     result: false,
     message: "Failed to compare due to missing image data",
+    numDiffPixels: 0,
   };
 };
 
@@ -259,10 +261,11 @@ const writeFailedScreenshot = (
  * @param {HandleMismatchParams} object - object containing baseline image, diff image, and numdiff
  * @return {object} object with result and message properties
  */
+
 const handleMismatch = (
   paths: ImagePaths,
   { baselinePNG, diffPNG, numdiff }: HandleMismatchParams
-) => {
+): ImageComparisonResults => {
   const matchPercent = calculateMatchPercent(baselinePNG, numdiff);
   console.log(
     `Mismatch found in screenshot ${paths.current} with ${matchPercent}% match`
@@ -276,10 +279,20 @@ const handleMismatch = (
     return {
       result: false,
       message: `Mismatch found in screenshot ${paths.current} with ${matchPercent}% match`,
+      numDiffPixels: numdiff,
     };
   }
+  console.info(
+    `Mismatch found in screenshot ${paths.current} with ${matchPercent}% match`
+  );
+  console.info(
+    `Threshold is greater than match percent, so it is not a failure.`
+  );
+  console.info(`not create the diff image`);
   return {
     result: true,
+    message: `Mismatch found in screenshot ${paths.current} with ${matchPercent}% match`,
+    numDiffPixels: numdiff,
   };
 };
 
