@@ -14,7 +14,7 @@ describe("getIMGMetadata", () => {
     expect(metadata.format).toEqual("png");
   });
 
-  test("should throw an error if the image does not exist", async () => {
+  test("should throw null if the image does not exist", async () => {
     // Arrange
     const image = `${process.cwd()}/unit-test-2.png`;
     // Act

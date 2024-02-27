@@ -3,7 +3,7 @@ import fs from "fs";
 import sharp from "sharp";
 import { PNG, PNGWithMetadata } from "pngjs";
 import pixelmatch, { PixelmatchOptions } from "pixelmatch";
-import appconfig from "../appconfig.json";
+import appconfig from "../../appconfig.json";
 import {
   AppType,
   PathDetails,
@@ -12,12 +12,12 @@ import {
   PlatformType,
   ImagePaths,
   HandleMismatchParams,
-} from "./type.js";
+} from "../types/type.js";
 import {
   VDI_IMAGE_WIDTH,
   VDI_IMAGE_HEIGHT,
   defaultCompareOptions,
-} from "./config.js";
+} from "../config/config.js";
 
 const writeFile = (
   path: string,

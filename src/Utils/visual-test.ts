@@ -1,5 +1,5 @@
-import { PlatformType, Options, ImagePaths } from "./type.js";
-import { APP_TYPE } from "./config.js";
+import { PlatformType, Options, ImagePaths } from "../types/type.js";
+import { APP_TYPE } from "../config/config.js";
 import {
   IsSameDimension,
   captureScreenshot,

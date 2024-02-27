@@ -1,6 +1,6 @@
 import { PixelmatchOptions } from "pixelmatch";
-import appconfig from "../appconfig.json";
-import { AppType } from "./type.js";
+import appconfig from "../../appconfig.json";
+import { AppType } from "../types/type.js";
 
 export const APP_TYPE = appconfig.apptype as AppType;
 export const VDI_IMAGE_WIDTH = 1280;

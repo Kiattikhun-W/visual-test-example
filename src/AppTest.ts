@@ -1,5 +1,5 @@
 import { remote } from "webdriverio";
-import { checkScreenshots } from "./visual-test.js";
+import { checkScreenshots } from "./Utils/visual-test.js";
 
 async function AppTest() {
   const browser = await remote({
