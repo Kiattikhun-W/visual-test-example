@@ -11,22 +11,43 @@ async function AppTest() {
     },
   });
 }
-const browser = AppTest();
+// const browser = null;
 
 describe("webdriver.io page", function () {
-  after(async () => {
-    await (await browser).closeWindow();
-    await (await browser).deleteSession();
+  let browser: WebdriverIO.Browser; // Declare 'browser' at the test suite level
+
+  before(async () => {
+    browser = await AppTest();
   });
-  it("should be return true because img is static", async () => {
-    await (await browser).url("https://webdriver.io/");
+  after(async () => {
+    await browser.closeWindow();
+    await browser.deleteSession();
+  });
+
+  it("stupid test", async function () {
+    await browser.url("https://webdriver.io/");
     const { result, message, numDiffPixels } = await checkScreenshots(
       {
         selector: `a.button[href="/docs/gettingstarted"]`,
         // selector: "#ms-floating-button",
         filename: "test2",
       },
-      await browser
+      browser
+    );
+    console.log(
+      `result: ${result}, message: ${message}, numDiffPixels: ${numDiffPixels}`
+    );
+  });
+
+  it("should be return true because img is static", async function () {
+    await browser.url("https://webdriver.io/");
+    const { result, message, numDiffPixels } = await checkScreenshots(
+      {
+        selector: `a.button[href="/docs/gettingstarted"]`,
+        // selector: "#ms-floating-button",
+        filename: "test2" + this.test?.title + this.test?.fullTitle(),
+      },
+      browser
     );
     console.log(
       `result: ${result}, message: ${message}, numDiffPixels: ${numDiffPixels}`
@@ -35,15 +56,15 @@ describe("webdriver.io page", function () {
     assert.isTrue(result);
   });
 
-  it("should be return false because different img", async () => {
-    await (await browser).url("https://webdriver.io/");
+  it("should be return false because different img", async function () {
+    await browser.url("https://webdriver.io/");
     const { result, message, numDiffPixels } = await checkScreenshots(
       {
         // selector: `a.button[href="/docs/gettingstarted"]`,
         selector: "#ms-floating-button",
         filename: "test2",
       },
-      await browser
+      browser
     );
 
     console.log(
