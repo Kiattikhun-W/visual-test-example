@@ -112,7 +112,7 @@ export const checkScreenshots = async (
   });
 
   if (numDiffPixels > 0) {
-    const result = handleMismatch(paths, {
+    const result: ImageComparisonResults = handleMismatch(paths, {
       baselinePNG,
       diffPNG,
       numdiff: numDiffPixels,
@@ -124,5 +124,5 @@ export const checkScreenshots = async (
     result: true,
     message: "Images are same",
     numDiffPixels,
-  };
+  } as ImageComparisonResults;
 };
