@@ -5,7 +5,7 @@
   "scripts": {
     "build": "copyfiles screenshots/* ./dist && tsc",
     "test": "node dist/src/AppTest",
-    "unit:test": "mocha"
+    "unit:test": "vitest"
   },
   "author": "",
   "license": "ISC",
