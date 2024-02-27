@@ -1,5 +1,5 @@
  {
     "apptype":"desktop",
-    "pushnewBaseImageToSharedDrive":"true",
+    "pushnewBaseImageToSharedDrive":"fa",
     "threshold":0.1
-}
+}   
