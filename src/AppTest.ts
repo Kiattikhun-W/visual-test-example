@@ -14,8 +14,6 @@ describe("webdriver.io page", function () {
     browser = await initBrowser();
   });
   afterEach(async () => {
-    // await browser.closeWindow();
-    console.log(this.title, "afterEach");
     clearBrowser();
   });
   describe("save stupid baseline", async function () {
@@ -29,7 +27,6 @@ describe("webdriver.io page", function () {
         `%c result: ${result}, message: ${message}, numDiffPixels: ${numDiffPixels}`,
         `background: #222; color: #bada55'`
       );
-      // assert.isTrue(result);
     });
   });
 
