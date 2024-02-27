@@ -3,7 +3,7 @@ import { checkScreenshots } from "./Utils/visual-test.js";
 import { assert } from "chai";
 
 import { describe, it } from "mocha";
-async function AppTest() {
+async function Browser() {
   return await remote({
     logLevel: "silent",
     capabilities: {
@@ -17,7 +17,7 @@ describe("webdriver.io page", function () {
   let browser: WebdriverIO.Browser; // Declare 'browser' at the test suite level
 
   before(async () => {
-    browser = await AppTest();
+    browser = await Browser();
   });
   after(async () => {
     await browser.closeWindow();
