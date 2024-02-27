@@ -19,6 +19,7 @@ import {
   VDI_IMAGE_HEIGHT,
   defaultCompareOptions,
 } from "../config/config.js";
+import { initBrowser } from "./Browser";
 
 const writeFile = (
   path: string,
@@ -90,15 +91,15 @@ const getPath = (
   ) as PathWithPNG;
 };
 
-const captureScreenshot = async (
-  { selector, filename, frame }: Options,
-  browser: WebdriverIO.Browser
-) => {
-  if (frame) {
-    //do something with additional frame
-  }
-  return await (await browser.$(selector)).saveScreenshot(filename);
-};
+const captureScreenshot = async ({ selector, filename, frame }: Options) =>
+  // browser: WebdriverIO.Browser
+  {
+    if (frame) {
+      //do something with additional frame
+    }
+    const browser = await initBrowser();
+    return await (await browser.$(selector)).saveScreenshot(filename);
+  };
 
 const getIMGMetadata = async (imagePath: PathWithPNG) => {
   try {

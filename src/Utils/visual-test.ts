@@ -25,13 +25,14 @@ import fs from "fs";
 /**
  * Checks and compares screenshots for a given selector, filename, and frame.
  * @param options - The options for screenshot comparison.
- * @param browser - The WebdriverIO browser instance.
  * @returns An object containing the result and message of the comparison.
  */
-export const checkScreenshots = async (
-  { selector, filename, frame }: Options,
-  browser: WebdriverIO.Browser
-): Promise<ImageComparisonResults> => {
+export const checkScreenshots = async ({
+  selector,
+  filename,
+  frame,
+}: Options): // browser: WebdriverIO.Browser
+Promise<ImageComparisonResults> => {
   const platform: PlatformType = determinePlatform(APP_TYPE);
 
   console.log("Plantfom 💜", platform);
@@ -54,14 +55,14 @@ export const checkScreenshots = async (
 
   if (!fs.existsSync(paths.baseline)) {
     await captureScreenshot(
-      { selector, filename: paths.baseline, frame },
-      browser
+      { selector, filename: paths.baseline, frame }
+      // browser
     );
   }
 
   await captureScreenshot(
-    { selector, filename: paths.current, frame },
-    browser
+    { selector, filename: paths.current, frame }
+    // browser
   );
 
   let baselineIMGDimension: sharp.Metadata | null = await getIMGMetadata(
