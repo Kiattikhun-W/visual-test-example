@@ -100,7 +100,11 @@ const captureScreenshot = async (
 };
 
 const getIMGMetadata = async (imagePath: PathWithPNG) => {
-  return await sharp(imagePath).metadata();
+  try {
+    return await sharp(imagePath).metadata();
+  } catch (error) {
+    return null;
+  }
 };
 
 const IsSameDimension = (
@@ -194,6 +198,14 @@ const writeIMG = (imagePath: PathWithPNG, imageBuffer: PNG) => {
   console.info('Successfully wrote image to "%s"', imagePath);
 };
 
+/**
+ * Handles the failed comparison of screenshots.
+ *
+ * @param failFolder - The path to the folder containing the failed screenshot.
+ * @param platform - The platform type.
+ * @param filename - The name of the screenshot file.
+ * @returns An object with the result and message indicating the failure.
+ */
 const handleFailedComparison = ({
   failFolder,
   platform,
@@ -285,4 +297,5 @@ export {
   handleFailedComparison,
   handleMismatch,
   createDirectoryFromPath,
+  writeFailedScreenshot,
 };

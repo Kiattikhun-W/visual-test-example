@@ -53,10 +53,21 @@ export const checkScreenshots = async (
     browser
   );
 
-  let baselineIMGDimension: sharp.Metadata = await getIMGMetadata(
+  let baselineIMGDimension: sharp.Metadata | null = await getIMGMetadata(
     paths.baseline
   );
-  let currentIMGDimension: sharp.Metadata = await getIMGMetadata(paths.current);
+  let currentIMGDimension: sharp.Metadata | null = await getIMGMetadata(
+    paths.current
+  );
+
+  if (!baselineIMGDimension || !currentIMGDimension) {
+    // Handle the case when the metadata is null
+    return handleFailedComparison({
+      failFolder: paths.current,
+      platform,
+      filename,
+    });
+  }
 
   const isSameIMGSize: boolean = IsSameDimension(
     baselineIMGDimension,
