@@ -21,14 +21,10 @@ describe("webdriver.io page", function () {
   describe("save stupid baseline", async function () {
     it("stupid test", async function () {
       await browser.url("https://webdriver.io/");
-      const { result, message, numDiffPixels } = await checkScreenshots(
-        {
-          selector: `a.button[href="/docs/gettingstarted"]`,
-          // selector: "#ms-floating-button",
-          filename: "test2",
-        }
-        // browser
-      );
+      const { result, message, numDiffPixels } = await checkScreenshots({
+        selector: `a.button[href="/docs/gettingstarted"]`,
+        filename: "test2",
+      });
       console.log(
         `%c result: ${result}, message: ${message}, numDiffPixels: ${numDiffPixels}`,
         `background: #222; color: #bada55'`
@@ -40,14 +36,10 @@ describe("webdriver.io page", function () {
   describe("should be return true because img is static", async function () {
     it("should be return true because img is static", async function () {
       await browser.url("https://webdriver.io/");
-      const { result, message, numDiffPixels } = await checkScreenshots(
-        {
-          selector: `a.button[href="/docs/gettingstarted"]`,
-          // selector: "#ms-floating-button",
-          filename: "test2" + this.test?.title,
-        }
-        // browser
-      );
+      const { result, message, numDiffPixels } = await checkScreenshots({
+        selector: `a.button[href="/docs/gettingstarted"]`,
+        filename: "test2" + this.test?.title,
+      });
       console.log(
         `result: ${result}, message: ${message}, numDiffPixels: ${numDiffPixels}`
       );
@@ -59,14 +51,10 @@ describe("webdriver.io page", function () {
   describe("should be return false because different img", async function () {
     it("should be return false because different img", async function () {
       await browser.url("https://webdriver.io/");
-      const { result, message, numDiffPixels } = await checkScreenshots(
-        {
-          // selector: `a.button[href="/docs/gettingstarted"]`,
-          selector: "#ms-floating-button",
-          filename: "test2",
-        }
-        // browser
-      );
+      const { result, message, numDiffPixels } = await checkScreenshots({
+        selector: "#ms-floating-button",
+        filename: "test2",
+      });
 
       console.log(
         `result: ${result}, message: ${message}, numDiffPixels: ${numDiffPixels}`
