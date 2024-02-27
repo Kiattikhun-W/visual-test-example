@@ -1,27 +1,22 @@
-import { remote } from "webdriverio";
 import { checkScreenshots } from "./Utils/visual-test.js";
 import { assert } from "chai";
 
 import { describe, it } from "mocha";
-async function Browser() {
-  return remote({
-    logLevel: "silent",
-    capabilities: {
-      browserName: "chrome",
-    },
-  });
-}
+import { clearBrowser, initBrowser } from "./Utils/Browser.js";
+
 // const browser = null;
+// Define options for the WebDriver
+
+let browser: WebdriverIO.Browser;
 
 describe("webdriver.io page", function () {
-  let browser: WebdriverIO.Browser; // Declare 'browser' at the test suite level
-
   beforeEach(async () => {
-    browser = await Browser();
+    browser = await initBrowser();
   });
   afterEach(async () => {
-    await browser.closeWindow();
-    await browser.deleteSession();
+    // await browser.closeWindow();
+    console.log(this.title, "afterEach");
+    clearBrowser();
   });
   describe("save stupid baseline", async function () {
     it("stupid test", async function () {
@@ -31,12 +26,14 @@ describe("webdriver.io page", function () {
           selector: `a.button[href="/docs/gettingstarted"]`,
           // selector: "#ms-floating-button",
           filename: "test2",
-        },
-        browser
+        }
+        // browser
       );
       console.log(
-        `result: ${result}, message: ${message}, numDiffPixels: ${numDiffPixels}`
+        `%c result: ${result}, message: ${message}, numDiffPixels: ${numDiffPixels}`,
+        `background: #222; color: #bada55'`
       );
+      // assert.isTrue(result);
     });
   });
 
@@ -47,9 +44,9 @@ describe("webdriver.io page", function () {
         {
           selector: `a.button[href="/docs/gettingstarted"]`,
           // selector: "#ms-floating-button",
-          filename: "test2" + this.test?.title + this.test?.fullTitle(),
-        },
-        browser
+          filename: "test2" + this.test?.title,
+        }
+        // browser
       );
       console.log(
         `result: ${result}, message: ${message}, numDiffPixels: ${numDiffPixels}`
@@ -67,8 +64,8 @@ describe("webdriver.io page", function () {
           // selector: `a.button[href="/docs/gettingstarted"]`,
           selector: "#ms-floating-button",
           filename: "test2",
-        },
-        browser
+        }
+        // browser
       );
 
       console.log(
