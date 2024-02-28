@@ -41,7 +41,16 @@ export type ImagePaths = {
   diff: PathWithPNG;
 };
 export type ImageComparisonResults = {
+  /**
+   * result - The result of the comparison. It will return `true` if the images are the same or if our threshold is greater than the match percentage; otherwise, it will return `false`.
+   **/
   result: boolean;
+  /**
+   * message - The message for the comparison.
+   **/
   message: string;
+  /**
+   * numDiffPixels - The number of different pixels between the two images.
+   **/
   numDiffPixels: number;
 };
