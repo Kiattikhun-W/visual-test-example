@@ -59,6 +59,10 @@ describe("webdriver.io page", function () {
           alpha: 0,
           diffMask: true,
           diffColorAlt: [0, 255, 0],
+        },
+        {
+          width: 200,
+          height: 200,
         }
       );
 
