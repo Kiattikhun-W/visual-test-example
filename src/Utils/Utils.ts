@@ -268,7 +268,7 @@ const handleMismatch = (
   console.log(
     `Mismatch found in screenshot ${paths.current} with ${matchPercent}% match`
   );
-  if (appconfig.threshold < matchPercent) {
+  if (matchPercent < appconfig.threshold) {
     const failedScreenshots = [paths.current];
     writeIMG(paths.diff, diffPNG);
 
