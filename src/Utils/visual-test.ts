@@ -4,7 +4,7 @@ import {
   ImagePaths,
   ImageComparisonResults,
 } from "../types/type.js";
-import { APP_TYPE } from "../config/config.js";
+import { APP_TYPE, defaultCompareOptions } from "../config/config.js";
 import {
   IsSameDimension,
   captureScreenshot,
@@ -21,17 +21,18 @@ import {
 import { PNGWithMetadata } from "pngjs";
 import sharp from "sharp";
 import fs from "fs";
+import { PixelmatchOptions } from "pixelmatch";
 
 /**
  * Checks and compares screenshots for a given selector, filename, and frame.
  * @param options - The options for screenshot comparison.
  * @returns An object containing the result and message of the comparison.
  */
-export const checkScreenshots = async ({
-  selector,
-  filename,
-  frame,
-}: Options): // browser: WebdriverIO.Browser
+export const checkScreenshots = async (
+  { selector, filename, frame }: Options,
+  compareOptions: PixelmatchOptions = defaultCompareOptions,
+  resizeOptions: sharp.ResizeOptions = { width: 1280, height: 1040 }
+): // browser: WebdriverIO.Browser
 Promise<ImageComparisonResults> => {
   const platform: PlatformType = determinePlatform(APP_TYPE);
 
@@ -87,8 +88,8 @@ Promise<ImageComparisonResults> => {
   );
 
   if (!isSameIMGSize) {
-    await resizeIMG(paths.baseline);
-    await resizeIMG(paths.current);
+    await resizeIMG(paths.baseline, resizeOptions);
+    await resizeIMG(paths.current, resizeOptions);
   }
 
   baselineIMGDimension = await getIMGMetadata(paths.baseline);
@@ -105,12 +106,16 @@ Promise<ImageComparisonResults> => {
     });
   }
   //result of pixelmatch
-  const { numDiffPixels, diffPNG } = compareIMG(paths.diff, {
-    img1: baselinePNG,
-    img2: currentPNG,
-    width: baselinePNG.width as number,
-    height: baselinePNG.height as number,
-  });
+  const { numDiffPixels, diffPNG } = compareIMG(
+    paths.diff,
+    {
+      img1: baselinePNG,
+      img2: currentPNG,
+      width: baselinePNG.width as number,
+      height: baselinePNG.height as number,
+    },
+    compareOptions
+  );
 
   if (numDiffPixels > 0) {
     const result: ImageComparisonResults = handleMismatch(paths, {

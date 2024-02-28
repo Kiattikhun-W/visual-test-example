@@ -48,10 +48,19 @@ describe("webdriver.io page", function () {
   describe("should be return false because different img", async function () {
     it("should be return false because different img", async function () {
       await browser.url("https://webdriver.io/");
-      const { result, message, numDiffPixels } = await checkScreenshots({
-        selector: "#ms-floating-button",
-        filename: "test2",
-      });
+      const { result, message, numDiffPixels } = await checkScreenshots(
+        {
+          selector: "#ms-floating-button",
+          filename: "test2",
+        },
+        {
+          threshold: 0.1,
+          diffColor: [255, 0, 0],
+          alpha: 0,
+          diffMask: true,
+          diffColorAlt: [0, 255, 0],
+        }
+      );
 
       console.log(
         `result: ${result}, message: ${message}, numDiffPixels: ${numDiffPixels}`

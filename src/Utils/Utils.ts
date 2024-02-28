@@ -14,11 +14,7 @@ import {
   HandleMismatchParams,
   ImageComparisonResults,
 } from "../types/type.js";
-import {
-  VDI_IMAGE_WIDTH,
-  VDI_IMAGE_HEIGHT,
-  defaultCompareOptions,
-} from "../config/config.js";
+import { VDI_IMAGE_WIDTH, VDI_IMAGE_HEIGHT } from "../config/config.js";
 import { initBrowser } from "./Browser";
 
 const writeFile = (
@@ -31,7 +27,7 @@ const writeFile = (
 
 const determinePlatform = (appType: AppType): PlatformType => {
   return appType.toLowerCase() === "desktop" ||
-    appType.toLowerCase() === "oldDesktop"
+    appType.toLowerCase() === "olddesktop"
     ? PlatformType.Desktop
     : PlatformType.Web;
 };
@@ -146,7 +142,7 @@ const resizeIMG = async (
 };
 
 const compareIMG = (
-  path: PathWithPNG,
+  _path: PathWithPNG,
   {
     img1,
     img2,
@@ -158,7 +154,7 @@ const compareIMG = (
     width: number;
     height: number;
   },
-  options: PixelmatchOptions = defaultCompareOptions
+  options: PixelmatchOptions
 ) => {
   const diffPNG = new PNG({
     width,
@@ -170,7 +166,7 @@ const compareIMG = (
     diffPNG.data,
     width,
     height,
-    { threshold: 0.1 }
+    options
   );
 
   return { numDiffPixels, diffPNG };
