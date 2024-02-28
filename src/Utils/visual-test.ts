@@ -69,10 +69,10 @@ Promise<ImageComparisonResults> => {
     // browser
   );
 
-  let baselineIMGDimension: sharp.Metadata | null = await getIMGMetadata(
+  const baselineIMGDimension: sharp.Metadata | null = await getIMGMetadata(
     paths.baseline
   );
-  let currentIMGDimension: sharp.Metadata | null = await getIMGMetadata(
+  const currentIMGDimension: sharp.Metadata | null = await getIMGMetadata(
     paths.current
   );
 
