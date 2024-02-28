@@ -4,9 +4,6 @@ import { assert } from "chai";
 import { describe, it } from "mocha";
 import { clearBrowser, initBrowser } from "./Utils/Browser.js";
 
-// const browser = null;
-// Define options for the WebDriver
-
 let browser: WebdriverIO.Browser;
 
 describe("webdriver.io page", function () {
