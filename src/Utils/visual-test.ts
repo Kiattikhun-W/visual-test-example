@@ -24,9 +24,12 @@ import fs from "fs";
 import { PixelmatchOptions } from "pixelmatch";
 
 /**
- * Checks and compares screenshots for a given selector, filename, and frame.
- * @param options - The options for screenshot comparison.
- * @returns An object containing the result and message of the comparison.
+ * Checks and compares screenshots using the specified options.
+ *
+ * @param {Options} options - The options for capturing and comparing screenshots.
+ * @param {PixelmatchOptions} compareOptions - The options for pixel comparison (optional).
+ * @param {sharp.ResizeOptions} resizeOptions - The options for resizing the screenshots (optional).
+ * @returns {Promise<ImageComparisonResults>} A promise that resolves to the image comparison results.
  */
 export const checkScreenshots = async (
   { selector, filename, frame }: Options,
