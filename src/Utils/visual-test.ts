@@ -38,7 +38,7 @@ export const checkScreenshots = async (
 Promise<ImageComparisonResults> => {
   const platform: PlatformType = determinePlatform(APP_TYPE);
 
-  console.log("Plantfom 💜", platform);
+  console.log("platform 💜", platform);
   // createDirectoryFromPlatform(platform);
 
   const paths: ImagePaths = {
