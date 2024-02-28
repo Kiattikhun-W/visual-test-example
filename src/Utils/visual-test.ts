@@ -23,11 +23,6 @@ import sharp from "sharp";
 import fs from "fs";
 import { PixelmatchOptions } from "pixelmatch";
 
-/**
- * Checks and compares screenshots for a given selector, filename, and frame.
- * @param options - The options for screenshot comparison.
- * @returns An object containing the result and message of the comparison.
- */
 export const checkScreenshots = async (
   { selector, filename, frame }: Options,
   compareOptions: PixelmatchOptions = defaultCompareOptions,
