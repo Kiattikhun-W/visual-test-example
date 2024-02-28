@@ -57,16 +57,10 @@ Promise<ImageComparisonResults> => {
   // }
 
   if (!fs.existsSync(paths.baseline)) {
-    await captureScreenshot(
-      { selector, filename: paths.baseline, frame }
-      // browser
-    );
+    await captureScreenshot({ selector, filename: paths.baseline, frame });
   }
 
-  await captureScreenshot(
-    { selector, filename: paths.current, frame }
-    // browser
-  );
+  await captureScreenshot({ selector, filename: paths.current, frame });
 
   const baselineIMGDimension: sharp.Metadata | null = await getIMGMetadata(
     paths.baseline
