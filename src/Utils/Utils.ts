@@ -95,6 +95,7 @@ const captureScreenshot = async ({ selector, filename, frame }: Options) =>
       //do something with additional frame
     }
     const browser = await initBrowser();
+    createDirectoryFromPath(filename);
     return await (await browser.$(selector)).saveScreenshot(filename);
   };
 
@@ -270,6 +271,7 @@ const handleMismatch = (
   );
   if (matchPercent < appconfig.threshold) {
     const failedScreenshots = [paths.current];
+    createDirectoryFromPath(paths.diff);
     writeIMG(paths.diff, diffPNG);
 
     writeFailedScreenshot("failed-screenshots.txt", failedScreenshots);

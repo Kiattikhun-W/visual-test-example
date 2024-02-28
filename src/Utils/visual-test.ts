@@ -9,7 +9,6 @@ import {
   IsSameDimension,
   captureScreenshot,
   compareIMG,
-  createDirectoryFromPath,
   decodePNGFromPath,
   determinePlatform,
   getIMGMetadata,
@@ -53,9 +52,9 @@ Promise<ImageComparisonResults> => {
     ),
     diff: getPath({ filename, apptype: APP_TYPE, platform }, { isDiff: true }),
   };
-  for (const path of Object.values(paths)) {
-    createDirectoryFromPath(path);
-  }
+  // for (const path of Object.values(paths)) {
+  //   createDirectoryFromPath(path);
+  // }
 
   if (!fs.existsSync(paths.baseline)) {
     await captureScreenshot(
