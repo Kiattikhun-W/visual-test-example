@@ -57,6 +57,7 @@ const createDirectoryFromPath = (path: string) => {
       return isSuccess;
     } else {
       fs.mkdirSync(path, { recursive: true });
+      return isSuccess;
     }
   } catch (error) {
     return !isSuccess;
