@@ -35,7 +35,7 @@ describe("webdriver.io page", function () {
       await browser.url("https://webdriver.io/");
       const { result, message, numDiffPixels } = await checkScreenshots({
         selector: `a.button[href="/docs/gettingstarted"]`,
-        filename: "test2" + this.test?.title,
+        filename: `test2 ${this.test?.title}`,
       });
       console.log(
         `result: ${result}, message: ${message}, numDiffPixels: ${numDiffPixels}`
