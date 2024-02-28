@@ -1,4 +1,4 @@
-import { checkScreenshots } from "./Utils/visual-test.js";
+import { compareImages } from "./Utils/visual-test.js";
 import { assert } from "chai";
 
 import { describe, it } from "mocha";
@@ -19,7 +19,7 @@ describe("webdriver.io page", function () {
   describe("save stupid baseline", async function () {
     it("stupid test", async function () {
       await browser.url("https://webdriver.io/");
-      const { result, message, numDiffPixels } = await checkScreenshots({
+      const { result, message, numDiffPixels } = await compareImages({
         selector: `a.button[href="/docs/gettingstarted"]`,
         filename: "test2",
       });
@@ -33,7 +33,7 @@ describe("webdriver.io page", function () {
   describe("should be return true because img is static", async function () {
     it("should be return true because img is static", async function () {
       await browser.url("https://webdriver.io/");
-      const { result, message, numDiffPixels } = await checkScreenshots({
+      const { result, message, numDiffPixels } = await compareImages({
         selector: `a.button[href="/docs/gettingstarted"]`,
         filename: `test2 ${this.test?.title}`,
       });
@@ -48,7 +48,7 @@ describe("webdriver.io page", function () {
   describe("should be return false because different img", async function () {
     it("should be return false because different img", async function () {
       await browser.url("https://webdriver.io/");
-      const { result, message, numDiffPixels } = await checkScreenshots(
+      const { result, message, numDiffPixels } = await compareImages(
         {
           selector: "#ms-floating-button",
           filename: "test2",

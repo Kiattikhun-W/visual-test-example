@@ -30,7 +30,7 @@ import { PixelmatchOptions } from "pixelmatch";
  * @param {sharp.ResizeOptions} resizeOptions - The options for resizing the screenshots (optional).
  * @returns {Promise<ImageComparisonResults>} A promise that resolves to the image comparison results.
  */
-export const checkScreenshots = async (
+export const compareImages = async (
   { selector, filename, frame }: Options,
   compareOptions: PixelmatchOptions = defaultCompareOptions,
   resizeOptions: sharp.ResizeOptions = { width: 1280, height: 1040 }
