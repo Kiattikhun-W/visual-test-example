@@ -95,9 +95,6 @@ Promise<ImageComparisonResults> => {
     await resizeIMG(paths.current, resizeOptions);
   }
 
-  baselineIMGDimension = await getIMGMetadata(paths.baseline);
-  currentIMGDimension = await getIMGMetadata(paths.current);
-
   const baselinePNG: PNGWithMetadata = decodePNGFromPath(paths.baseline);
   const currentPNG: PNGWithMetadata = decodePNGFromPath(paths.current);
 
