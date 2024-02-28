@@ -34,12 +34,10 @@ export const checkScreenshots = async (
   { selector, filename, frame }: Options,
   compareOptions: PixelmatchOptions = defaultCompareOptions,
   resizeOptions: sharp.ResizeOptions = { width: 1280, height: 1040 }
-): // browser: WebdriverIO.Browser
-Promise<ImageComparisonResults> => {
+): Promise<ImageComparisonResults> => {
   const platform: PlatformType = determinePlatform(APP_TYPE);
 
   console.log("platform 💜", platform);
-  // createDirectoryFromPlatform(platform);
 
   const paths: ImagePaths = {
     baseline: getPath(
