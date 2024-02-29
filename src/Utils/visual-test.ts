@@ -50,9 +50,6 @@ export const compareImages = async (
     ),
     diff: getPath({ filename, apptype: APP_TYPE, platform }, { isDiff: true }),
   };
-  // for (const path of Object.values(paths)) {
-  //   createDirectoryFromPath(path);
-  // }
 
   if (!fs.existsSync(paths.baseline)) {
     await captureScreenshot({
