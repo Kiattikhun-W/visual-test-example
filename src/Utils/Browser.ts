@@ -15,11 +15,16 @@ export async function initBrowser() {
     return browserInstance;
   } else {
     console.log("Creating a new browser instance.");
-    browserInstance = await remote({
-      capabilities: {
-        browserName: "chrome",
-      },
-    });
+    try {
+      browserInstance = await remote({
+        capabilities: {
+          browserName: "chrome",
+          browserVersion: "dev",
+        },
+      });
+    } catch (error) {
+      throw new Error("Failed to create a new browser instance.");
+    }
 
     return browserInstance;
   }
