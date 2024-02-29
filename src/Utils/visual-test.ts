@@ -1,8 +1,8 @@
 import {
   PlatformType,
-  Options,
   ImagePaths,
   ImageComparisonResults,
+  ImagesOptions,
 } from "../types/type.js";
 import { APP_TYPE, defaultCompareOptions } from "../config/config.js";
 import {
@@ -31,7 +31,7 @@ import { PixelmatchOptions } from "pixelmatch";
  * @returns {Promise<ImageComparisonResults>} A promise that resolves to the image comparison results.
  */
 export const compareImages = async (
-  { selector, filename, frame }: Options,
+  { element, filename }: ImagesOptions,
   compareOptions: PixelmatchOptions = defaultCompareOptions,
   resizeOptions: sharp.ResizeOptions = { width: 1280, height: 1040 }
 ): Promise<ImageComparisonResults> => {
@@ -55,10 +55,16 @@ export const compareImages = async (
   // }
 
   if (!fs.existsSync(paths.baseline)) {
-    await captureScreenshot({ selector, filename: paths.baseline, frame });
+    await captureScreenshot({
+      element,
+      filename: paths.baseline,
+    });
   }
 
-  await captureScreenshot({ selector, filename: paths.current, frame });
+  await captureScreenshot({
+    element,
+    filename: paths.current,
+  });
 
   const baselineIMGDimension: sharp.Metadata | null = await getIMGMetadata(
     paths.baseline

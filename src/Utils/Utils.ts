@@ -7,12 +7,12 @@ import appconfig from "../../appconfig.json";
 import {
   AppType,
   PathDetails,
-  Options,
   PathWithPNG,
   PlatformType,
   ImagePaths,
   HandleMismatchParams,
   ImageComparisonResults,
+  ImagesOptions,
 } from "../types/type.js";
 import { VDI_IMAGE_WIDTH, VDI_IMAGE_HEIGHT } from "../config/config.js";
 import { initBrowser } from "./Browser";
@@ -88,16 +88,15 @@ const getPath = (
   ) as PathWithPNG;
 };
 
-const captureScreenshot = async ({ selector, filename, frame }: Options) =>
-  // browser: WebdriverIO.Browser
-  {
-    if (frame) {
-      //do something with additional frame
-    }
+const captureScreenshot = async ({ element, filename }: ImagesOptions) => {
+  createDirectoryFromPath(filename);
+
+  if (typeof element === "string") {
     const browser = await initBrowser();
-    createDirectoryFromPath(filename);
-    return await (await browser.$(selector)).saveScreenshot(filename);
-  };
+    return await (await browser.$(element)).saveScreenshot(filename);
+  }
+  return await element.saveScreenshot(filename);
+};
 
 const getIMGMetadata = async (imagePath: PathWithPNG) => {
   try {

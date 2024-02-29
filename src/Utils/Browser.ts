@@ -2,9 +2,9 @@ import { remote } from "webdriverio";
 
 let browserInstance: WebdriverIO.Browser | null = null;
 
-export const clearBrowser = () => {
+export const clearBrowser = async () => {
   if (browserInstance) {
-    browserInstance.deleteSession();
+    await browserInstance.deleteSession();
     browserInstance = null;
   }
 };

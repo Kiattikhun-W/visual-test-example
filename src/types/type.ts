@@ -8,16 +8,15 @@ export type PathWithPNG = `${string}.png`;
 /**
  * Represents the element selector and the filename for the screenshot.
  */
-export interface Options {
+export interface ImagesOptions {
   /**
-   * selector - The element selector for the screenshot.
+   * element - The selector or element for the screenshot.
    */
-  selector: string;
+  element: string | WebdriverIO.Element;
   /**
    * filename - The title for the screenshot, We'll use this for compare image as the same title.
    */
   filename: string;
-  frame?: string;
 }
 
 export interface PathDetails {
